@@ -39,15 +39,21 @@ class _MobileHomePageState extends State<MobileHomePage> {
               onRefresh: () async {
                 Provider.of<FlightData>(context, listen: false).getFlights();
               },
-              child: ListView.builder(
-                itemExtent: 50,
-                physics: const ClampingScrollPhysics(),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    mainAxisExtent: 200,
+                    crossAxisCount: 2,
+                    childAspectRatio: 2.5,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10),
+                physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: Provider.of<FlightData>(context).flights.length,
                 itemBuilder: (context, index) {
                   var flight = Provider.of<FlightData>(context).flights[index];
-                  return AnimationConfiguration.staggeredList(
+                  return AnimationConfiguration.staggeredGrid(
                     position: index,
                     duration: const Duration(milliseconds: 375),
+                    columnCount: 2,
                     child: SlideAnimation(
                       verticalOffset: 50.0,
                       child: FadeInAnimation(
