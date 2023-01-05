@@ -12,6 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
 import 'package:english_words/english_words.dart';
+import 'package:my_app/ChangeLog.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,8 +64,9 @@ class _appState extends State<app> {
         if (MediaQuery.of(context).size.width > 450) {
           return Scaffold(
             appBar: AppBar(
-              title: Text("Flight Tracker"),
-              backgroundColor: AppTheme.accentColor,
+              foregroundColor: AppTheme.accentColor,
+              title: Text("Departures Ilulissat"),
+              backgroundColor: AppTheme.primaryColor,
               actions: [
                 IconButton(
                     onPressed: () {
@@ -101,8 +103,9 @@ class _appState extends State<app> {
         } else {
           return Scaffold(
             appBar: AppBar(
-              title: Text("Flight Tracker"),
-              backgroundColor: AppTheme.accentColor,
+              title: Text("Departures Ilulissat"),
+              backgroundColor: AppTheme.primaryColor,
+              foregroundColor: AppTheme.accentColor,
               actions: [
                 IconButton(
                     onPressed: () {
@@ -120,6 +123,7 @@ class _appState extends State<app> {
               child: ListView(
                 children: [
                   ListTile(
+                    style: ListTileStyle.drawer,
                     title: Text("Changelog"),
                     onTap: () {
                       Navigator.push(context,
@@ -146,39 +150,4 @@ class _appState extends State<app> {
   //return a tablet page
   //else
   //return a mobile page
-}
-
-class ChangeLog extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        child: Icon(Icons.arrow_back),
-      ),
-      body: Center(
-        child: Container(
-          child: Column(
-              //Center the column
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text(
-                  "Changelog",
-                  style: TextStyle(fontSize: 32),
-                ),
-                SizedBox(height: 50),
-                Text("Version 0.1.0"),
-                Text("Improved UI"),
-                Text("Added a drawer"),
-                Text("Added a changelog"),
-                Text("Implemented pull to refresh"),
-                SizedBox(height: 200),
-                Text("Created by: Marko Jovic")
-              ]),
-        ),
-      ),
-    );
-  }
 }

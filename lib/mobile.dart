@@ -51,21 +51,21 @@ class _MobileHomePageState extends State<MobileHomePage> {
                     crossAxisCount: 2,
                     mainAxisExtent: 200,
                     mainAxisSpacing: 20,
-                    crossAxisSpacing: 5),
+                    crossAxisSpacing: 0),
                 itemBuilder: (context, index) {
                   var flight = Provider.of<FlightData>(context).flights[index];
                   return AnimationConfiguration.staggeredGrid(
-                    duration: const Duration(milliseconds: 500),
                     position: index,
                     columnCount: 2,
-                    child: ScaleAnimation(
-                      child: FadeInAnimation(
-                        duration: const Duration(milliseconds: 500),
-                        child: FlightCard(
-                            titleSize: MobileHomePage.titleSize,
-                            flight: flight,
-                            bodySize: MobileHomePage.bodySize),
-                      ),
+                    child: SlideAnimation(
+                      verticalOffset: 500,
+                      horizontalOffset: 200,
+                      curve: Curves.fastLinearToSlowEaseIn,
+                      duration: Duration(milliseconds: 1000),
+                      child: FlightCard(
+                          titleSize: MobileHomePage.titleSize,
+                          flight: flight,
+                          bodySize: MobileHomePage.bodySize),
                     ),
                   );
                 },
