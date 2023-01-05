@@ -1,21 +1,10 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:my_app/FirstRunNotifier.dart';
 import 'package:provider/provider.dart';
-import 'dart:ui';
 import 'Esthetics.dart';
-import 'FlightAPI.dart' as fa;
 import 'package:flutter/material.dart';
 import 'package:my_app/CustomWidgets.dart';
 import 'package:my_app/FlightAPI.dart';
-import 'FlightAPI.dart';
-import 'package:intl/intl.dart';
-import 'dart:math';
-import 'package:flutter/widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:package_info/package_info.dart';
 
 class TabletHomePage extends StatefulWidget {
   late String randomString;
@@ -42,7 +31,7 @@ class _TabletHomePageState extends State<TabletHomePage> {
     return Consumer<FirstRun>(
       builder: (context, value, child) => Builder(
         builder: (context) {
-          if (Provider.of<FlightData>(context).flights.length == 0) {
+          if (Provider.of<FlightData>(context).flights.isEmpty) {
             return Container(
               color: Colors.transparent,
               child: Center(
@@ -77,11 +66,8 @@ class _TabletHomePageState extends State<TabletHomePage> {
                         child: FadeInAnimation(
                           duration: const Duration(milliseconds: 500),
                           child: FlightCard(
-                              titleSize: TabletHomePage.tabletTitleSize,
-                              flight: flight,
-                              bodySize: flight.arrivalAirport.length > 10
-                                  ? 16
-                                  : TabletHomePage.tabletBodySize),
+                            flight: flight,
+                          ),
                         ),
                       ),
                     );

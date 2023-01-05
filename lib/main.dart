@@ -65,15 +65,17 @@ class _appState extends State<app> {
           return Scaffold(
             appBar: AppBar(
               foregroundColor: AppTheme.accentColor,
-              title: Text("Departures Ilulissat"),
+              title: const Text("Departures Ilulissat"),
               backgroundColor: AppTheme.primaryColor,
               actions: [
                 IconButton(
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => ChangeLog()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ChangeLog()));
                     },
-                    icon: Icon(Icons.info))
+                    icon: const Icon(Icons.info))
               ],
             ),
             //Create a drawer with two options
@@ -84,10 +86,12 @@ class _appState extends State<app> {
               child: ListView(
                 children: [
                   ListTile(
-                    title: Text("Changelog"),
+                    title: const Text("Changelog"),
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => ChangeLog()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ChangeLog()));
                     },
                   ),
                 ],
@@ -103,16 +107,18 @@ class _appState extends State<app> {
         } else {
           return Scaffold(
             appBar: AppBar(
-              title: Text("Departures Ilulissat"),
+              title: const Text("Departures Ilulissat"),
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: AppTheme.accentColor,
               actions: [
                 IconButton(
                     onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => ChangeLog()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ChangeLog()));
                     },
-                    icon: Icon(Icons.info))
+                    icon: const Icon(Icons.info))
               ],
             ),
             //Create a drawer with two options
@@ -124,10 +130,12 @@ class _appState extends State<app> {
                 children: [
                   ListTile(
                     style: ListTileStyle.drawer,
-                    title: Text("Changelog"),
+                    title: const Text("Changelog"),
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => ChangeLog()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ChangeLog()));
                     },
                   ),
                 ],

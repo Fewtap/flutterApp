@@ -36,32 +36,29 @@ class _MobileHomePageState extends State<MobileHomePage> {
         } else {
           //return a gridview builder with the flights
           return RefreshIndicator(
-            onRefresh: () async {
-              Provider.of<FlightData>(context, listen: false).getFlights();
-            },
-            child: GridView.builder(
-              physics: const BouncingScrollPhysics(),
-              itemCount: Provider.of<FlightData>(context).flights.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.5,
-              ),
-              itemBuilder: ((context, index) {
-                var flight = Provider.of<FlightData>(context).flights[index];
-                return AnimationConfiguration.staggeredGrid(
-                  columnCount: 2,
-                  position: index,
-                  duration: const Duration(milliseconds: 375),
-                  child: ScaleAnimation(
-                    curve: Curves.easeIn,
-                    child: FlightCard(
-                      flight: flight,
+              onRefresh: () async {
+                Provider.of<FlightData>(context, listen: false).getFlights();
+              },
+              child: ListView.builder(
+                itemExtent: 50,
+                physics: const ClampingScrollPhysics(),
+                itemCount: Provider.of<FlightData>(context).flights.length,
+                itemBuilder: (context, index) {
+                  var flight = Provider.of<FlightData>(context).flights[index];
+                  return AnimationConfiguration.staggeredList(
+                    position: index,
+                    duration: const Duration(milliseconds: 375),
+                    child: SlideAnimation(
+                      verticalOffset: 50.0,
+                      child: FadeInAnimation(
+                        child: FlightCard(
+                          flight: flight,
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              }),
-            ),
-          );
+                  );
+                },
+              ));
         }
       },
     );

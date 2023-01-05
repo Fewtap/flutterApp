@@ -1,8 +1,6 @@
-import 'dart:ui';
 import 'Esthetics.dart';
 import 'package:flutter/material.dart';
 import 'package:my_app/FlightAPI.dart';
-import 'FlightAPI.dart';
 import 'package:intl/intl.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:animations/animations.dart';
@@ -10,13 +8,9 @@ import 'package:animations/animations.dart';
 class FlightCard extends StatelessWidget {
   const FlightCard({
     super.key,
-    required this.bodySize,
-    required this.titleSize,
     required this.flight,
   });
 
-  final double bodySize;
-  final double titleSize;
   final Flight flight;
 
 //Q: why isn't the hero working?
@@ -24,7 +18,7 @@ class FlightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FlipCard(
@@ -42,7 +36,7 @@ class FlightCard extends StatelessWidget {
               flight: flight,
             ),
           ),
-          back: BackSideofCard(),
+          back: const BackSideofCard(),
         ),
       ),
     );
@@ -85,8 +79,8 @@ class _BackSideofCardState extends State<BackSideofCard> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 hintText: 'Enter a room: ',
-                hintStyle: TextStyle(fontSize: 13),
-                prefixIcon: Icon(Icons.bed),
+                hintStyle: const TextStyle(fontSize: 13),
+                prefixIcon: const Icon(Icons.bed),
               ),
             ),
           ),
@@ -218,10 +212,10 @@ class ClosedFlightCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(60),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
                     flight.status.en.toString(),
-                    style: TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.black),
                   ),
                 ),
               ),
