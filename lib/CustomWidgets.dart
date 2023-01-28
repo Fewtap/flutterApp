@@ -6,25 +6,29 @@ import 'FlightAPI.dart';
 import 'package:intl/intl.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:animations/animations.dart';
+import 'dart:math';
 
 class FlightCard extends StatelessWidget {
   const FlightCard({
     super.key,
-    required this.bodySize,
-    required this.titleSize,
     required this.flight,
   });
 
-  final double bodySize;
-  final double titleSize;
+  
   final Flight flight;
 
 //Q: why isn't the hero working?
 
   @override
   Widget build(BuildContext context) {
+    //print the width of the screen
+    
+    
+
+    
+    
     return Container(
-      margin: EdgeInsets.all(8),
+      margin: const EdgeInsets.all(8),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FlipCard(
@@ -68,6 +72,8 @@ class _BackSideofCardState extends State<BackSideofCard> {
 
   @override
   Widget build(BuildContext context) {
+    print("Card width ${MediaQuery.of(context).size.width}");
+    
     return Container(
       color: AppTheme.accentColor,
       child: Column(
@@ -125,109 +131,116 @@ class ClosedFlightCard extends StatelessWidget {
 
   //The variables are gonna be divided by the width of the screen, so that the text size is relative to the screen size
   //That means that the bigger the number is, the smaller the text will be
-  final double bodySize = 15;
-  final double titleSize = 12;
   final Flight flight;
-
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            color: AppTheme.accentColor,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Column(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    const Center(
-                      child: SizedBox(
-                        height: 20,
-                      ),
-                    ),
-                    Center(
-                      child: LayoutBuilder(
-                        builder: (context, constraints) => Text(
-                          flight.rute.toString(),
-                          style: TextStyle(
-                              fontSize: constraints.maxWidth / titleSize),
+    
+    
+    
+    return LayoutBuilder(
+      builder: (buildcontext, constraints) {
+        double bodySize = min(constraints.maxHeight, constraints.maxWidth) / 9;
+    double titleSize = min(constraints.maxHeight, constraints.maxWidth) / 6;
+    double seperatorWidth = MediaQuery.of(context).size.width / 10;
+        return Expanded(
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Container(
+                color: AppTheme.accentColor,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const Center(
+                          child: SizedBox(
+                            height: 20,
+                          ),
                         ),
-                      ),
-                    ),
-                    Center(
-                      child: Container(
-                        height: 1,
-                        color: Colors.black,
-                        width: (12 * 6),
-                      ),
-                    ),
-                    const Center(child: SizedBox(height: 10)),
-                    LayoutBuilder(
-                      builder: (context, constraints) => Text(
-                        "Dest. ${flight.arrivalAirport}",
-                        style: TextStyle(
-                            fontSize: constraints.maxWidth / bodySize),
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: true,
-                      ),
-                    ),
-                    Center(
-                      child: LayoutBuilder(
-                        builder: (p0, constraints) => Text(
-                          "Planned: ${DateFormat('kk:mm').format(flight.planned)}",
-                          style: TextStyle(
-                              fontSize: constraints.maxWidth / bodySize),
-                        ),
-                      ),
-                    ),
-                    if (flight.estimated != null &&
-                        flight.estimated != flight.planned)
-                      Center(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            return Text(
-                              "Estimated: ${DateFormat('kk:mm').format(flight.estimated as DateTime)}",
+                        Center(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) => Text(
+                              flight.rute.toString(),
                               style: TextStyle(
-                                  fontSize: constraints.maxWidth / bodySize),
-                            );
-                          },
+                                  fontSize: titleSize),
+                            ),
+                          ),
                         ),
-                      ),
-                    Center(
-                      child: Text(
-                        "Bus departure: ${DateFormat('kk:mm').format(flight.planned.add(const Duration(minutes: -90)))}",
-                        style: TextStyle(
-                            fontSize: constraints.maxWidth / bodySize),
-                      ),
-                    )
-                  ],
-                );
-              },
-            ),
-          ),
-          if (flight.status.en == "Delayed" || flight.status.en == "Cancelled")
-            Positioned(
-              top: 0,
-              right: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color:
-                      flight.status.en == "Delayed" ? Colors.amber : Colors.red,
-                  borderRadius: BorderRadius.circular(60),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    flight.status.en.toString(),
-                    style: TextStyle(color: Colors.black),
-                  ),
+                        Center(
+                          child: Container(
+                            height: 1,
+                            color: Colors.black,
+                            width: (12 * 6),
+                          ),
+                        ),
+                        const Center(child: SizedBox(height: 10)),
+                        LayoutBuilder(
+                          builder: (context, constraints) => Text(
+                            "Dest. ${flight.arrivalAirport}",
+                            style: TextStyle(
+                                fontSize: bodySize),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                          ),
+                        ),
+                        Center(
+                          child: LayoutBuilder(
+                            builder: (p0, constraints) => Text(
+                              "Planned: ${DateFormat('kk:mm').format(flight.planned)}",
+                              style: TextStyle(
+                                  fontSize: bodySize),
+                            ),
+                          ),
+                        ),
+                        if (flight.estimated != null &&
+                            flight.estimated != flight.planned)
+                          Center(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return Text(
+                                  "Estimated: ${DateFormat('kk:mm').format(flight.estimated as DateTime)}",
+                                  style: TextStyle(
+                                      fontSize: bodySize),
+                                );
+                              },
+                            ),
+                          ),
+                        Center(
+                          child: Text(
+                            "Bus departure: ${DateFormat('kk:mm').format(flight.planned.add(const Duration(minutes: -90)))}",
+                            style: TextStyle(
+                                fontSize: bodySize),
+                          ),
+                        )
+                      ],
+                    );
+                  },
                 ),
               ),
-            ),
-        ],
-      ),
+              if (flight.status.en == "Delayed" || flight.status.en == "Cancelled")
+                Positioned(
+                  top: 0,
+                  right: constraints.maxWidth,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color:
+                          flight.status.en == "Delayed" ? Colors.amber : Colors.red,
+                      borderRadius: BorderRadius.circular(60),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        flight.status.en.toString(),
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      }
     );
   }
 }

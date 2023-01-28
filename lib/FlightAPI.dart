@@ -1,7 +1,14 @@
 // ignore: file_names
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+
 
 class FlightData extends ChangeNotifier {
   String jsonString = '';
@@ -9,20 +16,64 @@ class FlightData extends ChangeNotifier {
   int amountCalled = 0;
   bool active = false;
   List<Flight> flights = <Flight>[];
+  
+  
 
-  FlightData();
+  FlightData(){
+    //start a timer to get the flights every 5 minutes
+    Timer.periodic(const Duration(minutes: 5), (timer) {
+      getFlights();
+    });
+  }
+  
 
   Future<void> getFlights() async {
-    flights = [];
+
+    
+    bool success = false;
+    try{
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+        );
+      success = true;
+    }
+    catch(e){
+      print(e);
+    }
+    finally{
+      if(success){
+        print("Firebase initialized");
+      }
+      
+    }
+
+    //create a client for firestore
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    //get all the flights from firestore that has a timestamp that is today
+    QuerySnapshot<Map<String, dynamic>> flightsstore = await firestore
+        .collection("flights")
+        .where("Planned", isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now().subtract(Duration(days: 1))))
+        .where("Planned", isLessThanOrEqualTo: Timestamp.fromDate(DateTime.now().add(Duration(days: 1))))
+        .get();
+      //foreach flight in the querysnapshot, create a flight object and add it to the list
+      List<Flight> tempflights = flightsstore.docs.map((e) => Flight.fromJson(e.data())).toList();
+      //sort the list by planned time
+      tempflights.sort((a, b) => a.planned.compareTo(b.planned));
+      //set the flights to the list
+      flights = tempflights;
+      
+    
+    
     notifyListeners();
     Stopwatch stopwatch = Stopwatch();
     stopwatch.start();
 
-    List<Flight> tempflights = <Flight>[];
+    
     amountCalled++;
-    print("Amount called $amountCalled");
+    
 
-    var url = Uri.parse(
+    /*var url = Uri.parse(
         "https://www.mit.gl/wp-content/themes/mitgl/webservice.php?type=Departures&icao=BGJN");
 
     http.Response response = await http.get(url);
@@ -60,10 +111,11 @@ class FlightData extends ChangeNotifier {
       throw Future.error(
         StatusNotOKException(
             "Status code is not ok, Status code: $statusCode\nBody: $content "),
-      );
+      );*/
     }
   }
-}
+
+
 
 class Flight {
   late String rute;
@@ -81,12 +133,15 @@ class Flight {
     rute = json['Rute'];
     departureAirport = json['DepartureAirport'];
     arrivalAirport = json['ArrivalAirport'];
-    planned = DateTime.parse(json['Planned']);
+    Timestamp ts = json['Planned'];
+    planned = ts.toDate();
     if (json['Estimated'] != null) {
-      estimated = DateTime.parse(json['Estimated']);
+      Timestamp t = json['Estimated'];
+      estimated = t.toDate();
     }
     if (json['Actual'] != null) {
-      actual = DateTime.parse(json['Actual']);
+      Timestamp t = json['Actual'];
+      actual = t.toDate();
     }
     status = (json['Status'] != null ? Status.fromJson(json['Status']) : null)!;
     flightHash = json['FlightHash'];

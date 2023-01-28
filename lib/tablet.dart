@@ -39,6 +39,9 @@ class _TabletHomePageState extends State<TabletHomePage> {
   @override
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).orientation.toString());
+    //print the screen width
+    print(MediaQuery.of(context).size.width);
     return Consumer<FirstRun>(
       builder: (context, value, child) => Builder(
         builder: (context) {
@@ -60,9 +63,9 @@ class _TabletHomePageState extends State<TabletHomePage> {
                 child: GridView.builder(
                   physics: const BouncingScrollPhysics(),
                   itemCount: Provider.of<FlightData>(context).flights.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisExtent: 250,
+                  gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
+                      mainAxisExtent: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height / (Provider.of<FlightData>(context).flights.length - 2) : MediaQuery.of(context).size.height / 2,
                       mainAxisSpacing: 20,
                       crossAxisSpacing: 5),
                   itemBuilder: (context, index) {
@@ -77,11 +80,8 @@ class _TabletHomePageState extends State<TabletHomePage> {
                         child: FadeInAnimation(
                           duration: const Duration(milliseconds: 500),
                           child: FlightCard(
-                              titleSize: TabletHomePage.tabletTitleSize,
                               flight: flight,
-                              bodySize: flight.arrivalAirport.length > 10
-                                  ? 16
-                                  : TabletHomePage.tabletBodySize),
+                            ),
                         ),
                       ),
                     );

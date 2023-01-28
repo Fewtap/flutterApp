@@ -31,7 +31,6 @@ class _MobileHomePageState extends State<MobileHomePage> {
       builder: (context) {
         if (Provider.of<FlightData>(context).flights.length == 0) {
           return Container(
-            color: Colors.transparent,
             child: Center(
               child: CircularProgressIndicator(
                 color: AppTheme.accentColor,
@@ -63,9 +62,9 @@ class _MobileHomePageState extends State<MobileHomePage> {
                       curve: Curves.fastLinearToSlowEaseIn,
                       duration: Duration(milliseconds: 1000),
                       child: FlightCard(
-                          titleSize: MobileHomePage.titleSize,
+                          
                           flight: flight,
-                          bodySize: MobileHomePage.bodySize),
+                          ),
                     ),
                   );
                 },

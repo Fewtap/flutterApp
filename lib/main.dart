@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:my_app/Esthetics.dart';
 import 'package:my_app/tablet.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,13 +10,17 @@ import 'FlightAPI.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
-import 'package:english_words/english_words.dart';
 import 'package:my_app/ChangeLog.dart';
 
+
 void main() async {
+  //get the platform the app is running on and place it in a variable
+  
   WidgetsFlutterBinding.ensureInitialized();
   FlightData flightData = FlightData();
   flightData.getFlights();
+
+  //If the app is not running on windows or macos, initialize firebase
 
   FirstRun firstRun = FirstRun();
   firstRun.checkFirstRun();
@@ -27,12 +30,9 @@ void main() async {
     ChangeNotifierProvider(create: (context) => firstRun)
   ], child: const app()));
 
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
-    var db = FirebaseFirestore.instance;
+  
   }
-}
+
 
 class app extends StatefulWidget {
   const app({super.key});
@@ -60,12 +60,12 @@ class _appState extends State<app> {
         primarySwatch: Colors.blue,
       ),
       home: Builder(builder: (context) {
-        print(MediaQuery.of(context).size.width);
+        
         if (MediaQuery.of(context).size.width > 450) {
           return Scaffold(
             appBar: AppBar(
               foregroundColor: AppTheme.accentColor,
-              title: Text("Departures Ilulissat"),
+              title: Text("Departures hmm"),
               backgroundColor: AppTheme.primaryColor,
               actions: [
                 IconButton(
@@ -145,9 +145,5 @@ class _appState extends State<app> {
     );
   }
 
-  //Psuedo code
-  //if the screen is bigger than 450
-  //return a tablet page
-  //else
-  //return a mobile page
+  
 }
