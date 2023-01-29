@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:provider/provider.dart';
+
 import 'Esthetics.dart';
 import 'package:flutter/material.dart';
 import 'package:my_app/FlightAPI.dart';
@@ -14,7 +16,6 @@ class FlightCard extends StatelessWidget {
     required this.flight,
   });
 
-  
   final Flight flight;
 
 //Q: why isn't the hero working?
@@ -22,11 +23,7 @@ class FlightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //print the width of the screen
-    
-    
 
-    
-    
     return Container(
       margin: const EdgeInsets.all(8),
       child: Padding(
@@ -46,7 +43,10 @@ class FlightCard extends StatelessWidget {
               flight: flight,
             ),
           ),
-          back: BackSideofCard(),
+          back: BackSideofCard(
+            flight: flight,
+            context: context,
+          ),
         ),
       ),
     );
@@ -54,26 +54,28 @@ class FlightCard extends StatelessWidget {
 }
 
 class BackSideofCard extends StatefulWidget {
-  const BackSideofCard({super.key});
+  final Flight flight;
+
+  final BuildContext context;
+
+  const BackSideofCard(
+      {super.key, required this.flight, required this.context});
 
   @override
   State<BackSideofCard> createState() => _BackSideofCardState();
 }
 
 class _BackSideofCardState extends State<BackSideofCard> {
-  List<String> rooms = [];
   TextEditingController roomController = TextEditingController();
 
   void addRoom(String room) {
-    setState(() {
-      rooms.add(room);
-    });
+    throw UnimplementedError();
   }
 
   @override
   Widget build(BuildContext context) {
     print("Card width ${MediaQuery.of(context).size.width}");
-    
+
     return Container(
       color: AppTheme.accentColor,
       child: Column(
@@ -83,40 +85,66 @@ class _BackSideofCardState extends State<BackSideofCard> {
             child: TextFormField(
               controller: roomController,
               onFieldSubmitted: (value) {
-                addRoom(value);
-                roomController.clear();
+                //Check if value is can be parsed into an int
+                if (int.tryParse(value) == null) {
+                  //Show a snackbar if the value is not a number
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Please enter a number"),
+                    ),
+                  );
+
+                  //Clear the textfield
+                  roomController.clear();
+                } else {
+                  Provider.of<FlightData>(context, listen: false)
+                      .addRoom(value, widget.flight.flightHash);
+                  roomController.clear();
+                }
               },
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 hintText: 'Enter a room: ',
-                hintStyle: TextStyle(fontSize: 13),
-                prefixIcon: Icon(Icons.bed),
+                hintStyle: const TextStyle(fontSize: 13),
+                prefixIcon: const Icon(Icons.bed),
               ),
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: rooms.length,
-              itemBuilder: (context, index) {
-                //return a list tile with the room name and a delete button
-                return ListTile(
-                  title: Text("• ${rooms[index]}"),
-                  trailing: GestureDetector(
-                    child: IconButton(
-                      //Change the color to red when the icon is pressed
-                      color: Colors.red,
-                      iconSize: 15,
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          rooms.removeAt(index);
-                        });
+            child: FutureBuilder(
+              future: Provider.of<FlightData>(context, listen: false)
+                  .getRooms(widget.flight),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(snapshot.data![index].roomNumber),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              Provider.of<FlightData>(context, listen: false)
+                                  .deleteroom(snapshot.data![index].roomNumber,
+                                      snapshot.data![index].flightHash);
+                            },
+                          ),
+                        );
                       },
-                    ),
-                  ),
-                );
+                    );
+                  } else {
+                    return const Center(
+                      child: Text("No rooms"),
+                    );
+                  }
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
               },
             ),
           ),
@@ -134,114 +162,117 @@ class ClosedFlightCard extends StatelessWidget {
   final Flight flight;
   @override
   Widget build(BuildContext context) {
-    
-    
-    
-    return LayoutBuilder(
-      builder: (buildcontext, constraints) {
-        double bodySize = min(constraints.maxHeight, constraints.maxWidth) / 9;
-    double titleSize = min(constraints.maxHeight, constraints.maxWidth) / 6;
-    double seperatorWidth = MediaQuery.of(context).size.width / 10;
-        return Expanded(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Container(
-                color: AppTheme.accentColor,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        const Center(
-                          child: SizedBox(
-                            height: 20,
-                          ),
+    return LayoutBuilder(builder: (buildcontext, constraints) {
+      String flightNumber = flight.rute.toString();
+      String bodyText =
+          "Dest. ${flight.arrivalAirport} \nPlanned: ${DateFormat('kk:mm').format(flight.planned)}";
+      bodyText += flight.estimated != null
+          ? "\nEstimated: ${DateFormat('kk:mm').format(flight.estimated!)}"
+          : "";
+
+      double constraintsvalue =
+          min(constraints.maxHeight, constraints.maxWidth);
+      double characterslength = bodyText.length.toDouble();
+      double bodySize = constraintsvalue / (characterslength * 0.5);
+
+      double titleSize = constraintsvalue / (flightNumber.length);
+      double seperatorWidth = constraints.maxWidth * 0.7;
+      return Expanded(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Container(
+              color: AppTheme.accentColor,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      const Center(
+                        child: SizedBox(
+                          height: 20,
                         ),
-                        Center(
-                          child: LayoutBuilder(
-                            builder: (context, constraints) => Text(
-                              flight.rute.toString(),
-                              style: TextStyle(
-                                  fontSize: titleSize),
-                            ),
-                          ),
-                        ),
-                        Center(
-                          child: Container(
-                            height: 1,
-                            color: Colors.black,
-                            width: (12 * 6),
-                          ),
-                        ),
-                        const Center(child: SizedBox(height: 10)),
-                        LayoutBuilder(
-                          builder: (context, constraints) => Text(
-                            "Dest. ${flight.arrivalAirport}",
-                            style: TextStyle(
-                                fontSize: bodySize),
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                          ),
-                        ),
-                        Center(
-                          child: LayoutBuilder(
-                            builder: (p0, constraints) => Text(
-                              "Planned: ${DateFormat('kk:mm').format(flight.planned)}",
-                              style: TextStyle(
-                                  fontSize: bodySize),
-                            ),
-                          ),
-                        ),
-                        if (flight.estimated != null &&
-                            flight.estimated != flight.planned)
-                          Center(
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                return Text(
-                                  "Estimated: ${DateFormat('kk:mm').format(flight.estimated as DateTime)}",
-                                  style: TextStyle(
-                                      fontSize: bodySize),
-                                );
-                              },
-                            ),
-                          ),
-                        Center(
-                          child: Text(
-                            "Bus departure: ${DateFormat('kk:mm').format(flight.planned.add(const Duration(minutes: -90)))}",
-                            style: TextStyle(
-                                fontSize: bodySize),
-                          ),
-                        )
-                      ],
-                    );
-                  },
-                ),
-              ),
-              if (flight.status.en == "Delayed" || flight.status.en == "Cancelled")
-                Positioned(
-                  top: 0,
-                  right: constraints.maxWidth,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color:
-                          flight.status.en == "Delayed" ? Colors.amber : Colors.red,
-                      borderRadius: BorderRadius.circular(60),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        flight.status.en.toString(),
-                        style: TextStyle(color: Colors.black),
                       ),
+                      Center(
+                        child: LayoutBuilder(
+                          builder: (context, constraints) => Text(
+                            flight.rute.toString(),
+                            style: TextStyle(fontSize: titleSize),
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Container(
+                          height: 1,
+                          color: Colors.black,
+                          width: seperatorWidth,
+                        ),
+                      ),
+                      const Center(child: SizedBox(height: 10)),
+                      LayoutBuilder(
+                        builder: (context, constraints) => Text(
+                          "Dest. ${flight.arrivalAirport}",
+                          style: TextStyle(fontSize: bodySize),
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+                      ),
+                      Center(
+                        child: LayoutBuilder(
+                          builder: (p0, constraints) => Text(
+                            "Planned: ${DateFormat('kk:mm').format(flight.planned)}",
+                            style: TextStyle(fontSize: bodySize),
+                          ),
+                        ),
+                      ),
+                      if (flight.estimated != null &&
+                          flight.estimated != flight.planned)
+                        Center(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return Text(
+                                "Estimated: ${DateFormat('kk:mm').format(flight.estimated as DateTime)}",
+                                style: TextStyle(fontSize: bodySize),
+                              );
+                            },
+                          ),
+                        ),
+                      Center(
+                        child: Text(
+                          "Bus departure: ${DateFormat('kk:mm').format(flight.planned.add(const Duration(minutes: -90)))}",
+                          style: TextStyle(fontSize: bodySize),
+                        ),
+                      )
+                    ],
+                  );
+                },
+              ),
+            ),
+            if (flight.status.en == "Delayed" ||
+                flight.status.en == "Cancelled")
+              Positioned(
+                top: 0,
+                right: constraints.maxWidth,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: flight.status.en == "Delayed"
+                        ? Colors.amber
+                        : Colors.red,
+                    borderRadius: BorderRadius.circular(60),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      flight.status.en.toString(),
+                      style: TextStyle(color: Colors.black),
                     ),
                   ),
                 ),
-            ],
-          ),
-        );
-      }
-    );
+              ),
+          ],
+        ),
+      );
+    });
   }
 }
 

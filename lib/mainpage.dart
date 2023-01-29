@@ -63,9 +63,17 @@ class _TabletHomePageState extends State<TabletHomePage> {
                 child: GridView.builder(
                   physics: const BouncingScrollPhysics(),
                   itemCount: Provider.of<FlightData>(context).flights.length,
-                  gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
-                      mainAxisExtent: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height / (Provider.of<FlightData>(context).flights.length - 2) : MediaQuery.of(context).size.height / 2,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.of(context).orientation ==
+                              Orientation.portrait
+                          ? 2
+                          : 4,
+                      mainAxisExtent: MediaQuery.of(context).orientation ==
+                              Orientation.portrait
+                          ? MediaQuery.of(context).size.height /
+                              (Provider.of<FlightData>(context).flights.length -
+                                  2)
+                          : MediaQuery.of(context).size.height / 2,
                       mainAxisSpacing: 20,
                       crossAxisSpacing: 5),
                   itemBuilder: (context, index) {
@@ -80,8 +88,8 @@ class _TabletHomePageState extends State<TabletHomePage> {
                         child: FadeInAnimation(
                           duration: const Duration(milliseconds: 500),
                           child: FlightCard(
-                              flight: flight,
-                            ),
+                            flight: flight,
+                          ),
                         ),
                       ),
                     );
