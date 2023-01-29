@@ -40,19 +40,19 @@ class FlightData extends ChangeNotifier {
             .where((element) => element.planned.day == DateTime.now().day)
             .toList();
 
-        tempflights.forEach((element) {
+        for (var element in tempflights) {
           element.planned = element.planned.toLocal();
           if (element.estimated != null) {
             element.estimated = element.estimated!.toLocal();
           }
-        });
+        }
         active = false;
         stopwatch.stop();
         print("Elapsed time: ${stopwatch.elapsedMilliseconds}");
         flights = tempflights;
         notifyListeners();
         //print how many listeners are listening to the notifier
-        print("Listeners: ${this.hasListeners}");
+        print("Listeners: ${hasListeners}");
       }
     } else {
       var statusCode = response.statusCode;

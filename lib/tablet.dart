@@ -1,9 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:my_app/FirstRunNotifier.dart';
 import 'package:provider/provider.dart';
 import 'Esthetics.dart';
 import 'package:flutter/material.dart';
-import 'package:my_app/CustomWidgets.dart';
 import 'package:my_app/FlightAPI.dart';
 
 class TabletHomePage extends StatefulWidget {
@@ -22,6 +23,14 @@ class _TabletHomePageState extends State<TabletHomePage> {
 //rerun the build method when the future is updated to rebuild the animation
   late String _storedValue;
   late String _currentValue;
+
+  //A method that returns a random color
+  Color randomColor() {
+    Color randomColor =
+        Colors.primaries[Random().nextInt(Colors.primaries.length)];
+    print(randomColor.value);
+    return randomColor;
+  }
 
   // Initialize shared preferences
 
@@ -65,8 +74,8 @@ class _TabletHomePageState extends State<TabletHomePage> {
                       child: ScaleAnimation(
                         child: FadeInAnimation(
                           duration: const Duration(milliseconds: 500),
-                          child: FlightCard(
-                            flight: flight,
+                          child: Container(
+                            color: randomColor(),
                           ),
                         ),
                       ),

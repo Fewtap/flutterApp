@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:my_app/Esthetics.dart';
 import 'package:my_app/tablet.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,8 +10,8 @@ import 'FlightAPI.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/services.dart';
-import 'package:english_words/english_words.dart';
 import 'package:my_app/ChangeLog.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +42,7 @@ class app extends StatefulWidget {
 
 class _appState extends State<app> {
   double r = 20;
-  Widget? homePageWidget = MobileHomePage();
+  Widget? homePageWidget = const MobileHomePage();
 
   //Check if the build version in stored preferences is the same as the current build version
 
@@ -138,13 +137,37 @@ class _appState extends State<app> {
                               builder: (context) => const ChangeLog()));
                     },
                   ),
+                  ListTile(
+                    style: ListTileStyle.drawer,
+                    title: const Text("Weather"),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LayoutBuilder(builder: (c, a) {
+                            double divider = 1.1;
+                            return Scaffold(
+                              body: Center(
+                                child: Html(
+                                    shrinkWrap: true,
+                                    data:
+                                        """<iframe width="${a.maxWidth / divider}" height="${a.maxHeight / divider}"
+                                    src="https://embed.windy.com/embed2.html?lat=63.724&lon=-49.219&detailLat=65.413&detailLon=-52.895&width=${a.maxWidth / divider}&height=${a.maxHeight / divider}&zoom=5&level=surface&overlay=wind&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=true&metricWind=default&metricTemp=default&radarRange=-1"
+                                    frameborder="0"></iframe>"""),
+                              ),
+                            );
+                          }),
+                        ),
+                      );
+                    },
+                  )
                 ],
               ),
             ),
             backgroundColor: AppTheme.backgroundColor,
             body: Consumer<FlightData>(
               builder: (context, flightData, child) {
-                return MobileHomePage();
+                return const MobileHomePage();
               },
             ),
           );
